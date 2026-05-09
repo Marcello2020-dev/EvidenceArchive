@@ -14,6 +14,19 @@ struct EvidenceDetailView: View {
     var body: some View {
         Form {
             Section("Details") {
+                HStack(spacing: 12) {
+                    EvidenceThumbnailView(evidence: evidence, size: 70)
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(evidence.evidenceType.displayName)
+                            .font(.headline)
+                        Text(evidence.storedFilename)
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                            .lineLimit(1)
+                    }
+                }
+                .padding(.vertical, 4)
+
                 TextField("Title", text: $evidence.title)
                 LabeledContent("Type", value: evidence.evidenceType.displayName)
                 LabeledContent("Original Filename", value: evidence.originalFilename)
@@ -30,8 +43,12 @@ struct EvidenceDetailView: View {
             }
 
             Section("Integrity") {
-                Label("SHA-256 saved", systemImage: "checkmark.shield")
-                    .foregroundStyle(.green)
+                HStack(spacing: 12) {
+                    IconBadge(systemName: "checkmark.shield", color: .green, size: 40)
+                    Text("SHA-256 saved")
+                        .font(.headline)
+                        .foregroundStyle(.green)
+                }
                 Text(evidence.sha256)
                     .font(.system(.footnote, design: .monospaced))
                     .textSelection(.enabled)
@@ -41,14 +58,24 @@ struct EvidenceDetailView: View {
             }
 
             Section("File") {
-                Button("Preview File") {
+                Button {
                     openPreview()
+                } label: {
+                    ImportActionLabel(
+                        title: L10n.text("Preview File"),
+                        systemName: "eye",
+                        color: .blue
+                    )
                 }
                 .disabled(previewURL == nil)
 
                 if let previewURL {
                     ShareLink(item: previewURL) {
-                        Label("Share/Export Original File", systemImage: "square.and.arrow.up")
+                        ImportActionLabel(
+                            title: L10n.text("Share/Export Original File"),
+                            systemName: "square.and.arrow.up",
+                            color: evidence.evidenceType.tintColor
+                        )
                     }
                 }
 
@@ -57,6 +84,8 @@ struct EvidenceDetailView: View {
                     .foregroundStyle(.secondary)
             }
         }
+        .scrollContentBackground(.hidden)
+        .background(Color(uiColor: .systemGroupedBackground))
         .navigationTitle(evidence.title)
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {

@@ -4,6 +4,7 @@ import SwiftUI
 @main
 struct EvidenceArchiveApp: App {
     @StateObject private var evidenceStore = EvidenceStore()
+    @StateObject private var purchaseService = PurchaseService()
 
     private let modelContainer: ModelContainer = {
         do {
@@ -26,6 +27,7 @@ struct EvidenceArchiveApp: App {
         WindowGroup {
             ContentView()
                 .environmentObject(evidenceStore)
+                .environmentObject(purchaseService)
         }
         .modelContainer(modelContainer)
     }

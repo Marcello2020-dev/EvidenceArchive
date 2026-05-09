@@ -1,16 +1,22 @@
 import PhotosUI
 import SwiftData
 import SwiftUI
+import UIKit
 import UniformTypeIdentifiers
+import VisionKit
 
 struct AddEvidenceView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
     @EnvironmentObject private var store: EvidenceStore
+    @EnvironmentObject private var purchaseService: PurchaseService
 
     let caseFile: CaseFile
 
     @State private var showFileImporter = false
+    @State private var showCameraCapture = false
+    @State private var showDocumentScanner = false
+    @State private var showPaywall = false
     @State private var photoItems: [PhotosPickerItem] = []
 
     @State private var sourceLabel = L10n.text("Manual Import")
@@ -42,11 +48,38 @@ struct AddEvidenceView: View {
                         .lineLimit(2...5)
                 }
 
+                if !purchaseService.hasFullAccess {
+                    Section("Free Plan") {
+                        HStack(spacing: 12) {
+                            IconBadge(systemName: "lock", color: .orange, size: 34)
+                            VStack(alignment: .leading, spacing: 3) {
+                                Text(freePlanStatusText)
+                                    .font(.subheadline.weight(.medium))
+                                Text("Unlock to add unlimited case files and evidence items.")
+                                    .font(.footnote)
+                                    .foregroundStyle(.secondary)
+                            }
+                        }
+
+                        Button {
+                            showPaywall = true
+                        } label: {
+                            Label("Unlock Full Version", systemImage: "lock.open")
+                        }
+                    }
+                }
+
                 Section("Import Files") {
                     Button {
-                        showFileImporter = true
+                        if canImportEvidence(count: 1) {
+                            showFileImporter = true
+                        }
                     } label: {
-                        Label("Add from Files", systemImage: "folder")
+                        ImportActionLabel(
+                            title: L10n.text("Add from Files"),
+                            systemName: "folder",
+                            color: .blue
+                        )
                     }
 
                     PhotosPicker(
@@ -54,7 +87,45 @@ struct AddEvidenceView: View {
                         maxSelectionCount: 30,
                         matching: .any(of: [.images, .videos])
                     ) {
-                        Label("Add from Photos", systemImage: "photo.on.rectangle")
+                        ImportActionLabel(
+                            title: L10n.text("Add from Photos"),
+                            systemName: "photo.on.rectangle",
+                            color: .cyan
+                        )
+                    }
+                }
+
+                Section("Capture Evidence") {
+                    Button {
+                        if canImportEvidence(count: 1) {
+                            showCameraCapture = true
+                        }
+                    } label: {
+                        ImportActionLabel(
+                            title: L10n.text("Take Photo"),
+                            systemName: "camera",
+                            color: .orange
+                        )
+                    }
+                    .disabled(!isCameraCaptureAvailable)
+
+                    Button {
+                        if canImportEvidence(count: 1) {
+                            showDocumentScanner = true
+                        }
+                    } label: {
+                        ImportActionLabel(
+                            title: L10n.text("Scan Document"),
+                            systemName: "doc.viewfinder",
+                            color: .green
+                        )
+                    }
+                    .disabled(!isDocumentScannerAvailable)
+
+                    if let unavailableCaptureMessage {
+                        Text(unavailableCaptureMessage)
+                            .font(.footnote)
+                            .foregroundStyle(.secondary)
                     }
                 }
 
@@ -64,6 +135,7 @@ struct AddEvidenceView: View {
                         .frame(minHeight: 120)
 
                     Button {
+                        guard canImportEvidence(count: 1) else { return }
                         Task {
                             await store.addTextNoteEvidence(
                                 into: caseFile,
@@ -77,11 +149,17 @@ struct AddEvidenceView: View {
                             dismissIfNoError()
                         }
                     } label: {
-                        Label("Save Text Note as Evidence", systemImage: "square.and.pencil")
+                        ImportActionLabel(
+                            title: L10n.text("Save Text Note as Evidence"),
+                            systemName: "square.and.pencil",
+                            color: .purple
+                        )
                     }
                     .disabled(noteContent.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
                 }
             }
+            .scrollContentBackground(.hidden)
+            .background(Color(uiColor: .systemGroupedBackground))
             .navigationTitle("Add Evidence")
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
@@ -104,6 +182,7 @@ struct AddEvidenceView: View {
             ) { result in
                 switch result {
                 case .success(let urls):
+                    guard canImportEvidence(count: urls.count) else { return }
                     Task {
                         await store.importFiles(
                             urls: urls,
@@ -120,8 +199,32 @@ struct AddEvidenceView: View {
                     store.lastError = error.localizedDescription
                 }
             }
+            .fullScreenCover(isPresented: $showCameraCapture) {
+                CameraCaptureView { result in
+                    switch result {
+                    case .success(let image):
+                        importCapturedPhoto(image)
+                    case .failure(let error):
+                        store.lastError = error.localizedDescription
+                    }
+                }
+            }
+            .fullScreenCover(isPresented: $showDocumentScanner) {
+                DocumentScannerView { result in
+                    switch result {
+                    case .success(let payload):
+                        importCapturePayload(payload)
+                    case .failure(let error):
+                        store.lastError = error.localizedDescription
+                    }
+                }
+            }
             .onChange(of: photoItems) { _, newItems in
                 guard !newItems.isEmpty else { return }
+                guard canImportEvidence(count: newItems.count) else {
+                    photoItems = []
+                    return
+                }
                 Task {
                     var payloads: [EvidenceStore.DataImportPayload] = []
 
@@ -155,6 +258,89 @@ struct AddEvidenceView: View {
                 }
             }
         }
+        .sheet(isPresented: $showPaywall) {
+            PaywallView()
+        }
+    }
+
+    private var freePlanStatusText: String {
+        L10n.format(
+            "%lld of %lld free evidence items used in this case.",
+            Int64(caseFile.evidenceItems.count),
+            Int64(FreeUsageLimits.maxEvidenceItemsPerCase)
+        )
+    }
+
+    private var isCameraCaptureAvailable: Bool {
+        UIImagePickerController.isSourceTypeAvailable(.camera)
+    }
+
+    private var isDocumentScannerAvailable: Bool {
+        VNDocumentCameraViewController.isSupported
+    }
+
+    private var unavailableCaptureMessage: String? {
+        switch (isCameraCaptureAvailable, isDocumentScannerAvailable) {
+        case (true, true):
+            return nil
+        case (false, true):
+            return L10n.text("Camera capture is not available on this device.")
+        case (true, false):
+            return L10n.text("Document scanning is not available on this device.")
+        case (false, false):
+            return L10n.text("Camera capture and document scanning are not available on this device.")
+        }
+    }
+
+    private func importCapturedPhoto(_ image: UIImage) {
+        guard let data = image.jpegData(compressionQuality: 0.92) else {
+            store.lastError = EvidenceError.importFailed(L10n.text("Could not create image data.")).localizedDescription
+            return
+        }
+
+        let payload = EvidenceStore.DataImportPayload(
+            data: data,
+            suggestedFilename: "\(L10n.text("Captured Photo")) \(filenameTimestamp()).jpg",
+            typeIdentifier: UTType.jpeg.identifier
+        )
+        importCapturePayload(payload)
+    }
+
+    private func importCapturePayload(_ payload: EvidenceStore.DataImportPayload) {
+        guard canImportEvidence(count: 1) else { return }
+        Task {
+            await store.importPayloads(
+                [payload],
+                into: caseFile,
+                sourceLabel: sourceLabel,
+                note: commonNote,
+                tags: tags,
+                eventDate: eventDate,
+                context: modelContext
+            )
+            dismissIfNoError()
+        }
+    }
+
+    private func canImportEvidence(count: Int) -> Bool {
+        if FreeUsageLimits.canAddEvidence(
+            currentEvidenceCount: caseFile.evidenceItems.count,
+            adding: count,
+            hasFullAccess: purchaseService.hasFullAccess
+        ) {
+            return true
+        }
+
+        showPaywall = true
+        return false
+    }
+
+    private func filenameTimestamp() -> String {
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.timeZone = .current
+        formatter.dateFormat = "yyyyMMdd_HHmmss"
+        return formatter.string(from: Date())
     }
 
     private func dismissIfNoError() {

@@ -4,11 +4,13 @@ import SwiftUI
 struct CaseListView: View {
     @Environment(\.modelContext) private var modelContext
     @EnvironmentObject private var store: EvidenceStore
+    @EnvironmentObject private var purchaseService: PurchaseService
 
     @Query(sort: [SortDescriptor(\CaseFile.updatedAt, order: .reverse)])
     private var cases: [CaseFile]
 
     @State private var showingNewCase = false
+    @State private var showingPaywall = false
     @State private var editingCase: CaseFile?
     @State private var deletingCase: CaseFile?
 
@@ -16,11 +18,7 @@ struct CaseListView: View {
         NavigationStack {
             Group {
                 if cases.isEmpty {
-                    ContentUnavailableView(
-                        "No case files yet",
-                        systemImage: "folder",
-                        description: Text("Create your first archive to collect documents, screenshots, PDFs and notes.")
-                    )
+                    EmptyCasesView()
                 } else {
                     List {
                         ForEach(cases) { caseFile in
@@ -45,13 +43,23 @@ struct CaseListView: View {
                             }
                         }
                     }
+                    .listStyle(.insetGrouped)
+                    .scrollContentBackground(.hidden)
                 }
             }
+            .background(Color(uiColor: .systemGroupedBackground))
             .navigationTitle("Evidence Archive")
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
-                        showingNewCase = true
+                        if FreeUsageLimits.canCreateCase(
+                            currentCaseCount: cases.count,
+                            hasFullAccess: purchaseService.hasFullAccess
+                        ) {
+                            showingNewCase = true
+                        } else {
+                            showingPaywall = true
+                        }
                     } label: {
                         Label("New Case", systemImage: "plus")
                     }
@@ -59,6 +67,9 @@ struct CaseListView: View {
             }
             .sheet(isPresented: $showingNewCase) {
                 CaseEditorView(mode: .create)
+            }
+            .sheet(isPresented: $showingPaywall) {
+                PaywallView()
             }
             .sheet(item: $editingCase) { caseFile in
                 CaseEditorView(mode: .edit(caseFile))
@@ -113,31 +124,83 @@ private struct CaseRow: View {
     let caseFile: CaseFile
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            HStack {
-                Label(caseFile.title, systemImage: "folder")
-                    .font(.headline)
-                Spacer()
-                Text(caseFile.category.localizedTitle)
-                    .font(.caption)
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 4)
-                    .background(.secondary.opacity(0.12), in: Capsule())
-            }
+        HStack(alignment: .top, spacing: 12) {
+            IconBadge(
+                systemName: caseFile.category.iconName,
+                color: caseFile.category.tintColor,
+                size: 46
+            )
 
-            Text(caseFile.notes.isEmpty ? L10n.text("No notes") : caseFile.notes)
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
-                .lineLimit(2)
+            VStack(alignment: .leading, spacing: 7) {
+                HStack(alignment: .firstTextBaseline) {
+                    Text(caseFile.title)
+                        .font(.headline)
+                        .lineLimit(1)
+                    Spacer(minLength: 10)
+                    CapsuleBadge(
+                        caseFile.category.localizedTitle,
+                        color: caseFile.category.tintColor
+                    )
+                }
 
-            HStack(spacing: 12) {
-                Label("\(caseFile.evidenceItems.count)", systemImage: "doc")
-                Label(caseFile.updatedAt.formatted(date: .abbreviated, time: .shortened), systemImage: "clock")
+                Text(caseFile.notes.isEmpty ? L10n.text("No notes") : caseFile.notes)
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                    .lineLimit(2)
+
+                ViewThatFits(in: .horizontal) {
+                    HStack(spacing: 10) {
+                        caseStats
+                    }
+
+                    VStack(alignment: .leading, spacing: 6) {
+                        caseStats
+                    }
+                }
             }
-            .font(.caption)
-            .foregroundStyle(.secondary)
         }
-        .padding(.vertical, 4)
+        .padding(.vertical, 8)
+    }
+
+    @ViewBuilder
+    private var caseStats: some View {
+        CapsuleBadge(
+            "\(caseFile.evidenceItems.count)",
+            systemName: "doc",
+            color: .blue
+        )
+        CapsuleBadge(
+            caseFile.updatedAt.formatted(date: .abbreviated, time: .shortened),
+            systemName: "clock",
+            color: .secondary
+        )
+    }
+}
+
+private struct EmptyCasesView: View {
+    var body: some View {
+        VStack(spacing: 16) {
+            ZStack(alignment: .bottomTrailing) {
+                IconBadge(systemName: "folder", color: .indigo, size: 78)
+                Image(systemName: "plus.circle.fill")
+                    .font(.system(size: 28, weight: .semibold))
+                    .foregroundStyle(.green)
+                    .background(.background, in: Circle())
+                    .offset(x: 6, y: 6)
+            }
+
+            VStack(spacing: 6) {
+                Text("No case files yet")
+                    .font(.title3.weight(.semibold))
+                Text("Create your first archive to collect documents, screenshots, PDFs and notes.")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.center)
+            }
+            .frame(maxWidth: 330)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .padding()
     }
 }
 
@@ -177,7 +240,8 @@ struct CaseEditorView: View {
                     TextField("Title", text: $title)
                     Picker("Category", selection: $category) {
                         ForEach(CaseCategory.allCases) { category in
-                            Text(category.localizedTitle).tag(category)
+                            Label(category.localizedTitle, systemImage: category.iconName)
+                                .tag(category)
                         }
                     }
                 }

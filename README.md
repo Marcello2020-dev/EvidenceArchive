@@ -18,12 +18,17 @@ It does **not** claim legal certification or guaranteed court admissibility.
 - Case management (create/edit/delete)
 - Evidence import from Files picker
 - Evidence import from Photos picker (images/videos)
+- Evidence capture from camera
+- Document scanning with camera
 - Text notes saved as evidence files
 - Local storage under Application Support
 - SHA-256 hash per evidence file
 - Evidence timeline with search + sort
 - Evidence detail editing (metadata only)
 - QuickLook preview + share original file
+- Freemium limits with StoreKit full-version unlock:
+  - free: 2 case files
+  - free: 3 evidence items per case
 - Case export to folder:
   - `00_Index.csv`
   - `hashes_sha256.txt`
@@ -69,6 +74,8 @@ Covered tests:
 - Configure App Group capability for app + future extension target
 - Set `AppGroupConfig.useAppGroupContainer = true` once App Group is active
 - Add Share Extension target manually
+- Configure a non-consumable In-App Purchase in App Store Connect matching `PurchaseConfiguration.fullAccessProductID`
+- For local purchase testing, add/select a StoreKit configuration in the Xcode scheme or use an App Store Connect sandbox product
 
 Detailed plan:
 - `ShareExtensionImplementationPlan.md`
