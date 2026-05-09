@@ -40,14 +40,14 @@ It does **not** claim legal certification or guaranteed court admissibility.
 
 ## Run in Xcode
 
-1. Open `ChatArchive.xcodeproj`.
-2. Select scheme `ChatArchive`.
+1. Open `EvidenceArchive.xcodeproj`.
+2. Select scheme `EvidenceArchive`.
 3. Run on iOS Simulator or device.
 
 Command-line build:
 
 ```sh
-xcodebuild -project ChatArchive.xcodeproj -scheme ChatArchive -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' -configuration Debug -derivedDataPath /tmp/evidencearchive-build build CODE_SIGNING_ALLOWED=NO
+xcodebuild -project EvidenceArchive.xcodeproj -scheme EvidenceArchive -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' -configuration Debug -derivedDataPath /tmp/evidencearchive-build build CODE_SIGNING_ALLOWED=NO
 ```
 
 ## Tests

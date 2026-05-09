@@ -2,7 +2,7 @@ import SwiftData
 import SwiftUI
 
 @main
-struct ChatArchiveApp: App {
+struct EvidenceArchiveApp: App {
     @StateObject private var evidenceStore = EvidenceStore()
 
     private let modelContainer: ModelContainer = {

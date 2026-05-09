@@ -1,12 +1,12 @@
 # Share Extension Implementation Plan (Manual Xcode Steps)
 
-This MVP includes shared import logic (`ChatArchive/Import/SharedImportService.swift`) and app-group-aware storage configuration (`ChatArchive/Utilities/AppGroupConfig.swift`).
+This MVP includes shared import logic (`EvidenceArchive/Import/SharedImportService.swift`) and app-group-aware storage configuration (`EvidenceArchive/Utilities/AppGroupConfig.swift`).
 
 The Share Extension target itself still requires manual Xcode setup.
 
 ## 1) Add Share Extension target
 
-1. Open `ChatArchive.xcodeproj`.
+1. Open `EvidenceArchive.xcodeproj`.
 2. `File` -> `New` -> `Target`.
 3. Choose `Share Extension` (iOS).
 4. Name example: `EvidenceArchiveShareExtension`.
@@ -14,7 +14,7 @@ The Share Extension target itself still requires manual Xcode setup.
 
 ## 2) Enable App Groups in both targets
 
-1. Select app target `ChatArchive` -> `Signing & Capabilities`.
+1. Select app target `EvidenceArchive` -> `Signing & Capabilities`.
 2. Add capability `App Groups`.
 3. Add: `group.com.example.EvidenceArchive` (or your production identifier).
 4. Repeat for `EvidenceArchiveShareExtension` target.
@@ -26,17 +26,17 @@ The Share Extension target itself still requires manual Xcode setup.
 
 Add these files to both app and extension targets:
 
-- `ChatArchive/Models/CaseCategory.swift`
-- `ChatArchive/Models/EvidenceType.swift`
-- `ChatArchive/Models/CaseFile.swift`
-- `ChatArchive/Models/EvidenceItem.swift`
-- `ChatArchive/Utilities/AppGroupConfig.swift`
-- `ChatArchive/Utilities/SafeFilename.swift`
-- `ChatArchive/Utilities/StorageLayout.swift`
-- `ChatArchive/Services/HashService.swift`
-- `ChatArchive/Services/FileImportService.swift`
-- `ChatArchive/Services/EvidenceError.swift`
-- `ChatArchive/Import/SharedImportService.swift`
+- `EvidenceArchive/Models/CaseCategory.swift`
+- `EvidenceArchive/Models/EvidenceType.swift`
+- `EvidenceArchive/Models/CaseFile.swift`
+- `EvidenceArchive/Models/EvidenceItem.swift`
+- `EvidenceArchive/Utilities/AppGroupConfig.swift`
+- `EvidenceArchive/Utilities/SafeFilename.swift`
+- `EvidenceArchive/Utilities/StorageLayout.swift`
+- `EvidenceArchive/Services/HashService.swift`
+- `EvidenceArchive/Services/FileImportService.swift`
+- `EvidenceArchive/Services/EvidenceError.swift`
+- `EvidenceArchive/Import/SharedImportService.swift`
 
 ## 4) Configure accepted attachment types
 

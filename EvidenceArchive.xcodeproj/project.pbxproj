@@ -7,13 +7,13 @@
 	objects = {
 
 /* Begin PBXFileReference section */
-		D7A0000B2F3F000100000001 /* ChatArchive.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ChatArchive.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		D7A0000B2F3F000100000001 /* EvidenceArchive.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = EvidenceArchive.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		D7A0000C2F3F000100000001 /* ChatArchive */ = {
+		D7A0000C2F3F000100000001 /* EvidenceArchive */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = ChatArchive;
+			path = EvidenceArchive;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -32,7 +32,7 @@
 		D7A000012F3F000100000001 = {
 			isa = PBXGroup;
 			children = (
-				D7A0000C2F3F000100000001 /* ChatArchive */,
+				D7A0000C2F3F000100000001 /* EvidenceArchive */,
 				D7A0000A2F3F000100000001 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -40,7 +40,7 @@
 		D7A0000A2F3F000100000001 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				D7A0000B2F3F000100000001 /* ChatArchive.app */,
+				D7A0000B2F3F000100000001 /* EvidenceArchive.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -48,9 +48,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		D7A000062F3F000100000001 /* ChatArchive */ = {
+		D7A000062F3F000100000001 /* EvidenceArchive */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = D7A0000D2F3F000100000001 /* Build configuration list for PBXNativeTarget "ChatArchive" */;
+			buildConfigurationList = D7A0000D2F3F000100000001 /* Build configuration list for PBXNativeTarget "EvidenceArchive" */;
 			buildPhases = (
 				D7A000072F3F000100000001 /* Sources */,
 				D7A000082F3F000100000001 /* Frameworks */,
@@ -61,13 +61,13 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				D7A0000C2F3F000100000001 /* ChatArchive */,
+				D7A0000C2F3F000100000001 /* EvidenceArchive */,
 			);
-			name = ChatArchive;
+			name = EvidenceArchive;
 			packageProductDependencies = (
 			);
-			productName = ChatArchive;
-			productReference = D7A0000B2F3F000100000001 /* ChatArchive.app */;
+			productName = EvidenceArchive;
+			productReference = D7A0000B2F3F000100000001 /* EvidenceArchive.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -85,7 +85,7 @@
 					};
 				};
 			};
-			buildConfigurationList = D7A000032F3F000100000001 /* Build configuration list for PBXProject "ChatArchive" */;
+			buildConfigurationList = D7A000032F3F000100000001 /* Build configuration list for PBXProject "EvidenceArchive" */;
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -99,7 +99,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				D7A000062F3F000100000001 /* ChatArchive */,
+				D7A000062F3F000100000001 /* EvidenceArchive */,
 			);
 		};
 /* End PBXProject section */
@@ -266,9 +266,9 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 0.1;
-				PRODUCT_BUNDLE_IDENTIFIER = dev.marcello2020.chatexportviewer;
-				PRODUCT_MODULE_NAME = ChatArchive;
-				PRODUCT_NAME = ChatArchive;
+				PRODUCT_BUNDLE_IDENTIFIER = dev.marcello2020.evidencearchive;
+				PRODUCT_MODULE_NAME = EvidenceArchive;
+				PRODUCT_NAME = EvidenceArchive;
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -295,9 +295,9 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 0.1;
-				PRODUCT_BUNDLE_IDENTIFIER = dev.marcello2020.chatexportviewer;
-				PRODUCT_MODULE_NAME = ChatArchive;
-				PRODUCT_NAME = ChatArchive;
+				PRODUCT_BUNDLE_IDENTIFIER = dev.marcello2020.evidencearchive;
+				PRODUCT_MODULE_NAME = EvidenceArchive;
+				PRODUCT_NAME = EvidenceArchive;
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -308,7 +308,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		D7A000032F3F000100000001 /* Build configuration list for PBXProject "ChatArchive" */ = {
+		D7A000032F3F000100000001 /* Build configuration list for PBXProject "EvidenceArchive" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				D7A000042F3F000100000001 /* Debug */,
@@ -317,7 +317,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		D7A0000D2F3F000100000001 /* Build configuration list for PBXNativeTarget "ChatArchive" */ = {
+		D7A0000D2F3F000100000001 /* Build configuration list for PBXNativeTarget "EvidenceArchive" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				D7A0000E2F3F000100000001 /* Debug */,
