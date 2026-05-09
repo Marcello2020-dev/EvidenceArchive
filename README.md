@@ -1,30 +1,80 @@
-# Chat Archive
+# Evidence Archive (iOS MVP)
 
-Rudimentary iOS prototype for viewing exported chat archives.
+Local-first iOS app for structured evidence/document archiving.
 
-## Current MVP
+## Positioning
 
-- SwiftUI iPhone/iPad app
-- Imports `.txt` WhatsApp-style chat exports through the system file picker
-- Accepts `.zip` files as a placeholder entry so the import flow is visible
-- Shows message counts, participant counts, recent message previews, and local search
-- Keeps all data in memory for now
+This app provides:
+- local evidence archive
+- structured documentation
+- SHA-256 integrity hash
+- exportable index
+- private local processing
 
-## Run
+It does **not** claim legal certification or guaranteed court admissibility.
 
-Open `ChatArchive.xcodeproj` in Xcode and run the `ChatArchive` scheme on an iOS simulator.
+## Implemented MVP
+
+- Case management (create/edit/delete)
+- Evidence import from Files picker
+- Evidence import from Photos picker (images/videos)
+- Text notes saved as evidence files
+- Local storage under Application Support
+- SHA-256 hash per evidence file
+- Evidence timeline with search + sort
+- Evidence detail editing (metadata only)
+- QuickLook preview + share original file
+- Case export to folder:
+  - `00_Index.csv`
+  - `hashes_sha256.txt`
+  - `Evidence/` copied files
+- Shared import architecture for future Share Extension
+
+## Storage Layout
+
+`Application Support/EvidenceArchive/Cases/<caseUUID>/`
+
+- `evidence/`
+- `thumbnails/`
+- `exports/`
+
+## Run in Xcode
+
+1. Open `ChatArchive.xcodeproj`.
+2. Select scheme `ChatArchive`.
+3. Run on iOS Simulator or device.
 
 Command-line build:
 
 ```sh
-xcodebuild -project ChatArchive.xcodeproj -scheme ChatArchive -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' -configuration Debug -derivedDataPath .build/DerivedData build CODE_SIGNING_ALLOWED=NO
+xcodebuild -project ChatArchive.xcodeproj -scheme ChatArchive -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' -configuration Debug -derivedDataPath /tmp/evidencearchive-build build CODE_SIGNING_ALLOWED=NO
 ```
 
-## Next Steps
+## Tests
 
-- Persist imported archives with SwiftData
-- Add real ZIP extraction and media indexing
-- Parse dates and group message previews by day
-- Add Share Sheet import handling
-- Add tests for common WhatsApp export formats
+Utility tests are provided in `EvidenceArchiveCore` package:
 
+```sh
+swift test --package-path EvidenceArchiveCore
+```
+
+Covered tests:
+- safe filename sanitization
+- duplicate filename resolution
+- SHA-256 known vector
+- CSV escaping
+
+## Manual Xcode Steps Remaining
+
+- Configure App Group capability for app + future extension target
+- Set `AppGroupConfig.useAppGroupContainer = true` once App Group is active
+- Add Share Extension target manually
+
+Detailed plan:
+- `ShareExtensionImplementationPlan.md`
+
+## Known Limitations
+
+- ZIP export compression is not implemented yet (folder export is implemented).
+- No iCloud sync / account system (intentionally local-only).
+- No OCR or AI classification in this MVP.
