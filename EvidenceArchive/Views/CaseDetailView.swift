@@ -2,10 +2,19 @@ import SwiftUI
 
 struct CaseDetailView: View {
     enum SortMode: String, CaseIterable, Identifiable {
-        case newest = "Newest"
-        case oldest = "Oldest"
+        case newest
+        case oldest
 
         var id: String { rawValue }
+
+        var localizedTitle: String {
+            switch self {
+            case .newest:
+                return L10n.text("Newest")
+            case .oldest:
+                return L10n.text("Oldest")
+            }
+        }
     }
 
     struct ExportArtifact: Identifiable {
@@ -49,9 +58,9 @@ struct CaseDetailView: View {
         List {
             Section {
                 HStack {
-                    Label(caseFile.categoryRaw, systemImage: "folder")
+                    Label(caseFile.category.localizedTitle, systemImage: "folder")
                     Spacer()
-                    Text("\(caseFile.evidenceItems.count) items")
+                    Text(L10n.format("%lld items", Int64(caseFile.evidenceItems.count)))
                         .foregroundStyle(.secondary)
                 }
 
@@ -65,7 +74,7 @@ struct CaseDetailView: View {
             Section {
                 Picker("Sort", selection: $sortMode) {
                     ForEach(SortMode.allCases) { mode in
-                        Text(mode.rawValue).tag(mode)
+                        Text(mode.localizedTitle).tag(mode)
                     }
                 }
                 .pickerStyle(.segmented)

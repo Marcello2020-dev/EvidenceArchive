@@ -10,4 +10,8 @@ enum CaseCategory: String, Codable, CaseIterable, Identifiable {
     case other = "Other"
 
     var id: String { rawValue }
+
+    var localizedTitle: String {
+        L10n.text(rawValue)
+    }
 }

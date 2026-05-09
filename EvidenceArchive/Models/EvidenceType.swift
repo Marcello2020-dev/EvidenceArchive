@@ -35,21 +35,21 @@ enum EvidenceType: String, Codable, CaseIterable, Identifiable {
     var displayName: String {
         switch self {
         case .pdf:
-            return "PDF"
+            return L10n.text("PDF")
         case .image:
-            return "Image"
+            return L10n.text("Image")
         case .audio:
-            return "Audio"
+            return L10n.text("Audio")
         case .video:
-            return "Video"
+            return L10n.text("Video")
         case .text:
-            return "Text"
+            return L10n.text("Text")
         case .zip:
-            return "ZIP"
+            return L10n.text("ZIP")
         case .webLink:
-            return "Web Link"
+            return L10n.text("Web Link")
         case .other:
-            return "Other"
+            return L10n.text("Other")
         }
     }
 

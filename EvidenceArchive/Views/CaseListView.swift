@@ -103,7 +103,7 @@ struct CaseListView: View {
                     store.lastError = nil
                 }
             } message: {
-                Text(store.lastError ?? "Unknown error")
+                Text(store.lastError ?? L10n.text("Unknown error"))
             }
         }
     }
@@ -118,14 +118,14 @@ private struct CaseRow: View {
                 Label(caseFile.title, systemImage: "folder")
                     .font(.headline)
                 Spacer()
-                Text(caseFile.categoryRaw)
+                Text(caseFile.category.localizedTitle)
                     .font(.caption)
                     .padding(.horizontal, 8)
                     .padding(.vertical, 4)
                     .background(.secondary.opacity(0.12), in: Capsule())
             }
 
-            Text(caseFile.notes.isEmpty ? "No notes" : caseFile.notes)
+            Text(caseFile.notes.isEmpty ? L10n.text("No notes") : caseFile.notes)
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
                 .lineLimit(2)
@@ -177,7 +177,7 @@ struct CaseEditorView: View {
                     TextField("Title", text: $title)
                     Picker("Category", selection: $category) {
                         ForEach(CaseCategory.allCases) { category in
-                            Text(category.rawValue).tag(category)
+                            Text(category.localizedTitle).tag(category)
                         }
                     }
                 }
@@ -208,9 +208,9 @@ struct CaseEditorView: View {
     private var titleText: String {
         switch mode {
         case .create:
-            return "New Case"
+            return L10n.text("New Case")
         case .edit:
-            return "Edit Case"
+            return L10n.text("Edit Case")
         }
     }
 

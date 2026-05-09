@@ -9,13 +9,13 @@ enum EvidenceError: LocalizedError {
     var errorDescription: String? {
         switch self {
         case .invalidCaseTitle:
-            return "Please enter a case title."
+            return L10n.text("Please enter a case title.")
         case .importFailed(let reason):
-            return "Import failed: \(reason)"
+            return L10n.format("Import failed: %@", reason)
         case .unsupportedType:
-            return "Unsupported file type."
+            return L10n.text("Unsupported file type.")
         case .fileNotFound:
-            return "Stored file was not found."
+            return L10n.text("Stored file was not found.")
         }
     }
 }

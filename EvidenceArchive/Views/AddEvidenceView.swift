@@ -13,7 +13,7 @@ struct AddEvidenceView: View {
     @State private var showFileImporter = false
     @State private var photoItems: [PhotosPickerItem] = []
 
-    @State private var sourceLabel = "Manual Import"
+    @State private var sourceLabel = L10n.text("Manual Import")
     @State private var tags = ""
     @State private var commonNote = ""
     @State private var eventDate = Date()

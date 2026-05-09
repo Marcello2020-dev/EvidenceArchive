@@ -38,7 +38,7 @@ final class EvidenceStore: ObservableObject {
         let caseFile = CaseFile(title: trimmed, category: category, notes: notes)
         context.insert(caseFile)
         try context.save()
-        lastMessage = "Case created."
+        lastMessage = L10n.text("Case created.")
     }
 
     func updateCase(
@@ -58,13 +58,13 @@ final class EvidenceStore: ObservableObject {
         caseFile.notes = notes
         caseFile.updatedAt = .now
         try context.save()
-        lastMessage = "Case updated."
+        lastMessage = L10n.text("Case updated.")
     }
 
     func deleteCase(_ caseFile: CaseFile, context: ModelContext) throws {
         context.delete(caseFile)
         try context.save()
-        lastMessage = "Case deleted."
+        lastMessage = L10n.text("Case deleted.")
     }
 
     func importFiles(
@@ -110,7 +110,7 @@ final class EvidenceStore: ObservableObject {
 
             caseFile.updatedAt = .now
             try context.save()
-            lastMessage = "Imported \(urls.count) file(s)."
+            lastMessage = L10n.format("Imported %lld file(s).", Int64(urls.count))
             lastError = nil
         } catch {
             lastError = error.localizedDescription
@@ -162,7 +162,7 @@ final class EvidenceStore: ObservableObject {
 
             caseFile.updatedAt = .now
             try context.save()
-            lastMessage = "Imported \(payloads.count) item(s)."
+            lastMessage = L10n.format("Imported %lld item(s).", Int64(payloads.count))
             lastError = nil
         } catch {
             lastError = error.localizedDescription
@@ -179,7 +179,7 @@ final class EvidenceStore: ObservableObject {
         context: ModelContext
     ) async {
         let trimmedTitle = title.trimmingCharacters(in: .whitespacesAndNewlines)
-        let finalTitle = trimmedTitle.isEmpty ? "Text Note" : trimmedTitle
+        let finalTitle = trimmedTitle.isEmpty ? L10n.text("Text Note") : trimmedTitle
 
         let payload = DataImportPayload(
             data: Data(note.utf8),
@@ -201,7 +201,7 @@ final class EvidenceStore: ObservableObject {
     func exportCase(_ caseFile: CaseFile) -> URL? {
         do {
             let url = try exportService.exportFolder(for: caseFile)
-            lastMessage = "Export ready."
+            lastMessage = L10n.text("Export ready.")
             lastError = nil
             return url
         } catch {

@@ -86,7 +86,7 @@ struct EvidenceDetailView: View {
                 localError = nil
             }
         } message: {
-            Text(localError ?? "Unknown error")
+            Text(localError ?? L10n.text("Unknown error"))
         }
     }
 
