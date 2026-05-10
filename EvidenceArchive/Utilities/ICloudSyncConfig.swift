@@ -10,7 +10,7 @@ import SwiftData
 enum ICloudSyncConfig {
     static let isEnabled = true
     static let cloudKitContainerIdentifier = "iCloud.dev.marcello2020.evidencearchive"
-    static let ubiquityContainerIdentifier: String? = nil
+    static let ubiquityContainerIdentifier: String? = cloudKitContainerIdentifier
     static let documentsFolderName = "Documents"
 
     private static let cacheLock = NSLock()

@@ -30,7 +30,7 @@ It does **not** claim legal certification or guaranteed court admissibility.
 - Evidence timeline with search + sort
 - Evidence detail editing (metadata only)
 - QuickLook preview + share original file
-- Freemium limits with StoreKit full-version unlock (code present, enforcement currently disabled in `FreeUsageLimits.isEnabled`):
+- Freemium limits with StoreKit full-version unlock:
   - free: 2 case files
   - free: 3 evidence items per case
 - Case export to folder:
@@ -92,9 +92,12 @@ Covered tests:
 - Add Share Extension target manually
 - Configure a non-consumable In-App Purchase in App Store Connect matching `PurchaseConfiguration.fullAccessProductID`
 - For local purchase testing, add/select a StoreKit configuration in the Xcode scheme or use an App Store Connect sandbox product
+- Publish the privacy policy from `docs/PrivacyPolicy.md` at a stable public URL and enter it in App Store Connect
+- Complete App Store Connect privacy answers and verify the generated Xcode privacy report
 
 Detailed plan:
 - `ShareExtensionImplementationPlan.md`
+- `docs/AppStoreSubmissionChecklist.md`
 
 ## Known Limitations
 
