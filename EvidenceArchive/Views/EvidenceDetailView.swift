@@ -3,12 +3,15 @@ import SwiftUI
 
 struct EvidenceDetailView: View {
     @Environment(\.modelContext) private var modelContext
+    @Environment(\.dismiss) private var dismiss
+    @EnvironmentObject private var store: EvidenceStore
 
     @Bindable var evidence: EvidenceItem
 
     @State private var previewURL: URL?
     @State private var showingPreview = false
     @State private var showSavedBanner = false
+    @State private var showingDeleteConfirmation = false
     @State private var localError: String?
 
     var body: some View {
@@ -89,8 +92,20 @@ struct EvidenceDetailView: View {
         .navigationTitle(evidence.title)
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
-                Button("Save") {
-                    saveChanges()
+                Menu {
+                    Button {
+                        saveChanges()
+                    } label: {
+                        Label("Save", systemImage: "checkmark")
+                    }
+
+                    Button(role: .destructive) {
+                        showingDeleteConfirmation = true
+                    } label: {
+                        Label("Delete Evidence", systemImage: "trash")
+                    }
+                } label: {
+                    Label("Actions", systemImage: "ellipsis.circle")
                 }
             }
         }
@@ -106,6 +121,14 @@ struct EvidenceDetailView: View {
             Button("OK", role: .cancel) { }
         } message: {
             Text("Evidence metadata updated.")
+        }
+        .alert("Delete evidence?", isPresented: $showingDeleteConfirmation) {
+            Button("Delete", role: .destructive) {
+                deleteEvidence()
+            }
+            Button("Cancel", role: .cancel) { }
+        } message: {
+            Text("This removes the evidence item and its stored file.")
         }
         .alert("Error", isPresented: Binding(
             get: { localError != nil },
@@ -132,6 +155,15 @@ struct EvidenceDetailView: View {
     private func openPreview() {
         guard previewURL != nil else { return }
         showingPreview = true
+    }
+
+    private func deleteEvidence() {
+        do {
+            try store.deleteEvidence(evidence, context: modelContext)
+            dismiss()
+        } catch {
+            localError = error.localizedDescription
+        }
     }
 
     private func refreshPreviewURL() {

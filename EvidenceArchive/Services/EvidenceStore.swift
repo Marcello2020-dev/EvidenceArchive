@@ -67,6 +67,27 @@ final class EvidenceStore: ObservableObject {
         lastMessage = L10n.text("Case deleted.")
     }
 
+    func deleteEvidence(_ evidence: EvidenceItem, context: ModelContext) throws {
+        let storedURL = try? StorageLayout.storedFileURL(for: evidence)
+        let caseFile = evidence.caseFile
+
+        context.delete(evidence)
+        caseFile?.updatedAt = .now
+        try context.save()
+
+        if let storedURL,
+           FileManager.default.fileExists(atPath: storedURL.path) {
+            do {
+                try FileManager.default.removeItem(at: storedURL)
+            } catch {
+                lastMessage = nil
+                throw EvidenceError.deleteFailed(error.localizedDescription)
+            }
+        }
+
+        lastMessage = L10n.text("Evidence deleted.")
+    }
+
     func importFiles(
         urls: [URL],
         into caseFile: CaseFile,

@@ -24,12 +24,14 @@ struct CaseDetailView: View {
 
     @EnvironmentObject private var store: EvidenceStore
     @EnvironmentObject private var purchaseService: PurchaseService
+    @Environment(\.modelContext) private var modelContext
 
     @State private var searchText = ""
     @State private var sortMode: SortMode = .newest
     @State private var showingAddEvidence = false
     @State private var showingPaywall = false
     @State private var exportArtifact: ExportArtifact?
+    @State private var deletingEvidence: EvidenceItem?
 
     @Bindable var caseFile: CaseFile
 
@@ -85,6 +87,13 @@ struct CaseDetailView: View {
                         } label: {
                             EvidenceRow(item: item)
                         }
+                        .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+                            Button(role: .destructive) {
+                                deletingEvidence = item
+                            } label: {
+                                Label("Delete", systemImage: "trash")
+                            }
+                        }
                     }
                 }
             }
@@ -138,6 +147,25 @@ struct CaseDetailView: View {
         }
         .sheet(isPresented: $showingPaywall) {
             PaywallView()
+        }
+        .alert("Delete evidence?", isPresented: Binding(
+            get: { deletingEvidence != nil },
+            set: { if !$0 { deletingEvidence = nil } }
+        )) {
+            Button("Delete", role: .destructive) {
+                guard let deletingEvidence else { return }
+                do {
+                    try store.deleteEvidence(deletingEvidence, context: modelContext)
+                } catch {
+                    store.lastError = error.localizedDescription
+                }
+                self.deletingEvidence = nil
+            }
+            Button("Cancel", role: .cancel) {
+                deletingEvidence = nil
+            }
+        } message: {
+            Text("This removes the evidence item and its stored file.")
         }
     }
 

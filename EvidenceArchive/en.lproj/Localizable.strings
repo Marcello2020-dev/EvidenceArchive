@@ -7,8 +7,10 @@
 "Evidence Archive" = "Evidence Archive";
 "New Case" = "New Case";
 "Delete case?" = "Delete case?";
+"Delete evidence?" = "Delete evidence?";
 "Cancel" = "Cancel";
 "This also removes all evidence items in the case." = "This also removes all evidence items in the case.";
+"This removes the evidence item and its stored file." = "This removes the evidence item and its stored file.";
 "Error" = "Error";
 "OK" = "OK";
 "Unknown error" = "Unknown error";
@@ -88,6 +90,8 @@
 "Preview File" = "Preview File";
 "Share/Export Original File" = "Share/Export Original File";
 "Direct file editing is disabled in this MVP." = "Direct file editing is disabled in this MVP.";
+"Actions" = "Actions";
+"Delete Evidence" = "Delete Evidence";
 "Saved" = "Saved";
 "Evidence metadata updated." = "Evidence metadata updated.";
 "Local evidence archive for structured documentation on iPhone and iPad." = "Local evidence archive for structured documentation on iPhone and iPad.";
@@ -100,11 +104,13 @@
 "Files are saved under EvidenceArchive/Cases/<caseUUID>/... in iCloud Drive when available, with Application Support as the local fallback." = "Files are saved under EvidenceArchive/Cases/<caseUUID>/... in iCloud Drive when available, with Application Support as the local fallback.";
 "Please enter a case title." = "Please enter a case title.";
 "Import failed: %@" = "Import failed: %@";
+"Delete failed: %@" = "Delete failed: %@";
 "Unsupported file type." = "Unsupported file type.";
 "Stored file was not found." = "Stored file was not found.";
 "Case created." = "Case created.";
 "Case updated." = "Case updated.";
 "Case deleted." = "Case deleted.";
+"Evidence deleted." = "Evidence deleted.";
 "Imported %lld file(s)." = "Imported %lld file(s).";
 "Imported %lld item(s)." = "Imported %lld item(s).";
 "Export ready." = "Export ready.";

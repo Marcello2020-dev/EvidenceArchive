@@ -7,8 +7,10 @@
 "Evidence Archive" = "Evidence Archive";
 "New Case" = "Neuer Fall";
 "Delete case?" = "Fall löschen?";
+"Delete evidence?" = "Beweis löschen?";
 "Cancel" = "Abbrechen";
 "This also removes all evidence items in the case." = "Dadurch werden auch alle Beweisstücke dieses Falls entfernt.";
+"This removes the evidence item and its stored file." = "Dadurch werden der Beweiseintrag und die gespeicherte Datei entfernt.";
 "Error" = "Fehler";
 "OK" = "OK";
 "Unknown error" = "Unbekannter Fehler";
@@ -88,6 +90,8 @@
 "Preview File" = "Datei ansehen";
 "Share/Export Original File" = "Originaldatei teilen/exportieren";
 "Direct file editing is disabled in this MVP." = "Direktes Bearbeiten der Datei ist in diesem MVP deaktiviert.";
+"Actions" = "Aktionen";
+"Delete Evidence" = "Beweis löschen";
 "Saved" = "Gespeichert";
 "Evidence metadata updated." = "Beweis-Metadaten wurden aktualisiert.";
 "Local evidence archive for structured documentation on iPhone and iPad." = "Lokales Beweisarchiv für strukturierte Dokumentation auf iPhone und iPad.";
@@ -100,11 +104,13 @@
 "Files are saved under EvidenceArchive/Cases/<caseUUID>/... in iCloud Drive when available, with Application Support as the local fallback." = "Dateien werden unter EvidenceArchive/Cases/<caseUUID>/... in iCloud Drive gespeichert, wenn iCloud verfügbar ist, mit Application Support als lokalem Fallback.";
 "Please enter a case title." = "Bitte gib einen Falltitel ein.";
 "Import failed: %@" = "Import fehlgeschlagen: %@";
+"Delete failed: %@" = "Löschen fehlgeschlagen: %@";
 "Unsupported file type." = "Nicht unterstützter Dateityp.";
 "Stored file was not found." = "Gespeicherte Datei wurde nicht gefunden.";
 "Case created." = "Fall erstellt.";
 "Case updated." = "Fall aktualisiert.";
 "Case deleted." = "Fall gelöscht.";
+"Evidence deleted." = "Beweis gelöscht.";
 "Imported %lld file(s)." = "%lld Datei(en) importiert.";
 "Imported %lld item(s)." = "%lld Eintrag/Einträge importiert.";
 "Export ready." = "Export bereit.";
