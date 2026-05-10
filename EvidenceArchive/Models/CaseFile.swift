@@ -3,15 +3,15 @@ import SwiftData
 
 @Model
 final class CaseFile {
-    @Attribute(.unique) var id: UUID
-    var title: String
-    var categoryRaw: String
-    var createdAt: Date
-    var updatedAt: Date
-    var notes: String
+    var id: UUID = UUID()
+    var title: String = ""
+    var categoryRaw: String = CaseCategory.privateCase.rawValue
+    var createdAt: Date = Date()
+    var updatedAt: Date = Date()
+    var notes: String = ""
 
     @Relationship(deleteRule: .cascade, inverse: \EvidenceItem.caseFile)
-    var evidenceItems: [EvidenceItem]
+    var evidenceItems: [EvidenceItem]? = []
 
     init(
         id: UUID = UUID(),
@@ -27,11 +27,18 @@ final class CaseFile {
         self.createdAt = createdAt
         self.updatedAt = updatedAt
         self.notes = notes
-        self.evidenceItems = []
     }
 
     var category: CaseCategory {
         get { CaseCategory(rawValue: categoryRaw) ?? .other }
         set { categoryRaw = newValue.rawValue }
+    }
+
+    var evidenceList: [EvidenceItem] {
+        evidenceItems ?? []
+    }
+
+    var evidenceCount: Int {
+        evidenceItems?.count ?? 0
     }
 }

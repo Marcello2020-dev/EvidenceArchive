@@ -83,7 +83,13 @@
 					D7A000062F3F000100000001 = {
 						CreatedOnToolsVersion = 26.3;
 						SystemCapabilities = {
+							com.apple.iCloud = {
+								enabled = 1;
+							};
 							com.apple.InAppPurchase = {
+								enabled = 1;
+							};
+							com.apple.Push = {
 								enabled = 1;
 							};
 						};
@@ -256,7 +262,9 @@
 		D7A0000E2F3F000100000001 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = EvidenceArchive/EvidenceArchive.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = S2972HAK7G;
@@ -287,7 +295,9 @@
 		D7A0000F2F3F000100000001 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = EvidenceArchive/EvidenceArchive.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = S2972HAK7G;

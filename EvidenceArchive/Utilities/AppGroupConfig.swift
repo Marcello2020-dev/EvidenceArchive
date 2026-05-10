@@ -12,18 +12,34 @@ enum AppGroupConfig {
     static let rootFolderName = "EvidenceArchive"
     static let casesFolderName = "Cases"
 
-    static func rootContainerURL(fileManager: FileManager = .default) throws -> URL {
-        if useAppGroupContainer,
-           let groupURL = fileManager.containerURL(forSecurityApplicationGroupIdentifier: groupIdentifier) {
-            return groupURL
-        }
-
-        return try fileManager.url(
+    static func localRootContainerURL(fileManager: FileManager = .default) throws -> URL {
+        try fileManager.url(
             for: .applicationSupportDirectory,
             in: .userDomainMask,
             appropriateFor: nil,
             create: true
         )
+    }
+
+    static func appGroupRootContainerURL(fileManager: FileManager = .default) -> URL? {
+        if useAppGroupContainer,
+           let groupURL = fileManager.containerURL(forSecurityApplicationGroupIdentifier: groupIdentifier) {
+            return groupURL
+        }
+
+        return nil
+    }
+
+    static func rootContainerURL(fileManager: FileManager = .default) throws -> URL {
+        if let iCloudURL = ICloudSyncConfig.cachedUbiquityDocumentsURL() {
+            return iCloudURL
+        }
+
+        if let groupURL = appGroupRootContainerURL(fileManager: fileManager) {
+            return groupURL
+        }
+
+        return try localRootContainerURL(fileManager: fileManager)
     }
 
     static func evidenceRootURL(fileManager: FileManager = .default) throws -> URL {

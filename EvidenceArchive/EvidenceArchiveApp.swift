@@ -6,22 +6,36 @@ struct EvidenceArchiveApp: App {
     @StateObject private var evidenceStore = EvidenceStore()
     @StateObject private var purchaseService = PurchaseService()
 
-    private let modelContainer: ModelContainer = {
+    private let modelContainer = Self.makeModelContainer()
+
+    init() {
+        ICloudSyncConfig.prepareUbiquityContainer()
+        ICloudFileMigrationService.migrateLocalEvidenceToICloudIfAvailable()
+    }
+
+    private static func makeModelContainer() -> ModelContainer {
+        let schema = Schema([CaseFile.self, EvidenceItem.self])
+
         do {
-            return try ModelContainer(for: CaseFile.self, EvidenceItem.self)
+            let cloudConfig = ModelConfiguration(
+                schema: schema,
+                cloudKitDatabase: ICloudSyncConfig.cloudKitDatabase
+            )
+            return try ModelContainer(for: schema, configurations: cloudConfig)
         } catch {
             do {
-                let fallbackConfig = ModelConfiguration(isStoredInMemoryOnly: true)
-                return try ModelContainer(
-                    for: CaseFile.self,
-                    EvidenceItem.self,
-                    configurations: fallbackConfig
-                )
+                let localConfig = ModelConfiguration(schema: schema, cloudKitDatabase: .none)
+                return try ModelContainer(for: schema, configurations: localConfig)
             } catch {
-                preconditionFailure("Failed to initialize model container: \(error.localizedDescription)")
+                do {
+                    let fallbackConfig = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
+                    return try ModelContainer(for: schema, configurations: fallbackConfig)
+                } catch {
+                    preconditionFailure("Failed to initialize model container: \(error.localizedDescription)")
+                }
             }
         }
-    }()
+    }
 
     var body: some Scene {
         WindowGroup {

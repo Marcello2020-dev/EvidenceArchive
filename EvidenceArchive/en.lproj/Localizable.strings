@@ -92,10 +92,12 @@
 "Evidence metadata updated." = "Evidence metadata updated.";
 "Local evidence archive for structured documentation on iPhone and iPad." = "Local evidence archive for structured documentation on iPhone and iPad.";
 "Privacy" = "Privacy";
-"Evidence Archive stores your files locally on this device unless you explicitly export or share them. No cloud upload is performed by this app." = "Evidence Archive stores your files locally on this device unless you explicitly export or share them. No cloud upload is performed by this app.";
+"Evidence Archive processes files on this device. With iCloud sync enabled, Apple iCloud may sync case metadata and evidence files between devices signed in to your Apple ID. The app does not use accounts or third-party uploads." = "Evidence Archive processes files on this device. With iCloud sync enabled, Apple iCloud may sync case metadata and evidence files between devices signed in to your Apple ID. The app does not use accounts or third-party uploads.";
+"iCloud Sync" = "iCloud Sync";
+"Case metadata syncs through a private CloudKit database. Evidence files are stored in the app's iCloud Drive container when iCloud is available; otherwise the app falls back to local device storage." = "Case metadata syncs through a private CloudKit database. Evidence files are stored in the app's iCloud Drive container when iCloud is available; otherwise the app falls back to local device storage.";
 "SHA-256 hashes can help verify file integrity after import. This app does not provide legal advice and does not guarantee admissibility of evidence." = "SHA-256 hashes can help verify file integrity after import. This app does not provide legal advice and does not guarantee admissibility of evidence.";
 "Storage" = "Storage";
-"Files are saved in Application Support/EvidenceArchive/Cases/<caseUUID>/..." = "Files are saved in Application Support/EvidenceArchive/Cases/<caseUUID>/...";
+"Files are saved under EvidenceArchive/Cases/<caseUUID>/... in iCloud Drive when available, with Application Support as the local fallback." = "Files are saved under EvidenceArchive/Cases/<caseUUID>/... in iCloud Drive when available, with Application Support as the local fallback.";
 "Please enter a case title." = "Please enter a case title.";
 "Import failed: %@" = "Import failed: %@";
 "Unsupported file type." = "Unsupported file type.";

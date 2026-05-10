@@ -48,7 +48,7 @@ struct AddEvidenceView: View {
                         .lineLimit(2...5)
                 }
 
-                if !purchaseService.hasFullAccess {
+                if FreeUsageLimits.isEnabled && !purchaseService.hasFullAccess {
                     Section("Free Plan") {
                         HStack(spacing: 12) {
                             IconBadge(systemName: "lock", color: .orange, size: 34)
@@ -266,7 +266,7 @@ struct AddEvidenceView: View {
     private var freePlanStatusText: String {
         L10n.format(
             "%lld of %lld free evidence items used in this case.",
-            Int64(caseFile.evidenceItems.count),
+            Int64(caseFile.evidenceCount),
             Int64(FreeUsageLimits.maxEvidenceItemsPerCase)
         )
     }
@@ -324,7 +324,7 @@ struct AddEvidenceView: View {
 
     private func canImportEvidence(count: Int) -> Bool {
         if FreeUsageLimits.canAddEvidence(
-            currentEvidenceCount: caseFile.evidenceItems.count,
+            currentEvidenceCount: caseFile.evidenceCount,
             adding: count,
             hasFullAccess: purchaseService.hasFullAccess
         ) {

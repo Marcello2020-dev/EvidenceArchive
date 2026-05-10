@@ -3,21 +3,21 @@ import SwiftData
 
 @Model
 final class EvidenceItem {
-    @Attribute(.unique) var id: UUID
-    var caseID: UUID
-    var title: String
-    var evidenceTypeRaw: String
-    var originalFilename: String
-    var storedFilename: String
-    var eventDate: Date
-    var importedAt: Date
-    var source: String
-    var note: String
-    var tags: String
-    var sha256: String
-    var fileSize: Int64
-    var typeIdentifier: String
-    var relativeFilePath: String
+    var id: UUID = UUID()
+    var caseID: UUID = UUID()
+    var title: String = ""
+    var evidenceTypeRaw: String = EvidenceType.other.rawValue
+    var originalFilename: String = ""
+    var storedFilename: String = ""
+    var eventDate: Date = Date()
+    var importedAt: Date = Date()
+    var source: String = ""
+    var note: String = ""
+    var tags: String = ""
+    var sha256: String = ""
+    var fileSize: Int64 = 0
+    var typeIdentifier: String = ""
+    var relativeFilePath: String = ""
 
     var caseFile: CaseFile?
 

@@ -165,7 +165,7 @@ private struct CaseRow: View {
     @ViewBuilder
     private var caseStats: some View {
         CapsuleBadge(
-            "\(caseFile.evidenceItems.count)",
+            "\(caseFile.evidenceCount)",
             systemName: "doc",
             color: .blue
         )

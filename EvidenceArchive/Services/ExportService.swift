@@ -19,7 +19,7 @@ struct ExportService {
 
         try fileManager.createDirectory(at: evidenceTarget, withIntermediateDirectories: true)
 
-        let sortedEvidence = caseFile.evidenceItems.sorted { lhs, rhs in
+        let sortedEvidence = caseFile.evidenceList.sorted { lhs, rhs in
             if lhs.eventDate != rhs.eventDate { return lhs.eventDate > rhs.eventDate }
             return lhs.importedAt > rhs.importedAt
         }

@@ -36,7 +36,7 @@ struct CaseDetailView: View {
     private var filteredItems: [EvidenceItem] {
         let needle = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
 
-        let scoped = caseFile.evidenceItems.filter { item in
+        let scoped = caseFile.evidenceList.filter { item in
             guard !needle.isEmpty else { return true }
             return item.title.localizedCaseInsensitiveContains(needle)
                 || item.note.localizedCaseInsensitiveContains(needle)
@@ -120,7 +120,7 @@ struct CaseDetailView: View {
 
                 Button {
                     if FreeUsageLimits.canAddEvidence(
-                        currentEvidenceCount: caseFile.evidenceItems.count,
+                        currentEvidenceCount: caseFile.evidenceCount,
                         adding: 1,
                         hasFullAccess: purchaseService.hasFullAccess
                     ) {
@@ -188,15 +188,15 @@ private struct CaseSummaryHeader: View {
             color: caseFile.category.tintColor
         )
         CapsuleBadge(
-            L10n.format("%lld items", Int64(caseFile.evidenceItems.count)),
+            L10n.format("%lld items", Int64(caseFile.evidenceCount)),
             systemName: "doc",
             color: .blue
         )
-        if !hasFullAccess {
+        if FreeUsageLimits.isEnabled && !hasFullAccess {
             CapsuleBadge(
                 L10n.format(
                     "Free %lld/%lld",
-                    Int64(caseFile.evidenceItems.count),
+                    Int64(caseFile.evidenceCount),
                     Int64(FreeUsageLimits.maxEvidenceItemsPerCase)
                 ),
                 systemName: "lock",

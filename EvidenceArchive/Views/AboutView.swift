@@ -9,7 +9,11 @@ struct AboutView: View {
                 }
 
                 Section("Privacy") {
-                    Text("Evidence Archive stores your files locally on this device unless you explicitly export or share them. No cloud upload is performed by this app.")
+                    Text("Evidence Archive processes files on this device. With iCloud sync enabled, Apple iCloud may sync case metadata and evidence files between devices signed in to your Apple ID. The app does not use accounts or third-party uploads.")
+                }
+
+                Section("iCloud Sync") {
+                    Text("Case metadata syncs through a private CloudKit database. Evidence files are stored in the app's iCloud Drive container when iCloud is available; otherwise the app falls back to local device storage.")
                 }
 
                 Section("Integrity") {
@@ -17,7 +21,7 @@ struct AboutView: View {
                 }
 
                 Section("Storage") {
-                    Text("Files are saved in Application Support/EvidenceArchive/Cases/<caseUUID>/...")
+                    Text("Files are saved under EvidenceArchive/Cases/<caseUUID>/... in iCloud Drive when available, with Application Support as the local fallback.")
                         .font(.footnote)
                         .foregroundStyle(.secondary)
                 }
