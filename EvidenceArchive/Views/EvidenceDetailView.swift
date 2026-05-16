@@ -45,6 +45,13 @@ struct EvidenceDetailView: View {
                 TextField("Tags (comma separated)", text: $evidence.tags)
             }
 
+            if !evidence.recognizedText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                Section("Recognized Text") {
+                    TextEditor(text: $evidence.recognizedText)
+                        .frame(minHeight: 120)
+                }
+            }
+
             Section("Integrity") {
                 HStack(spacing: 12) {
                     IconBadge(systemName: "checkmark.shield", color: .green, size: 40)
@@ -88,7 +95,7 @@ struct EvidenceDetailView: View {
             }
         }
         .scrollContentBackground(.hidden)
-        .background(Color(uiColor: .systemGroupedBackground))
+        .evidenceScreenBackground()
         .navigationTitle(evidence.title)
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {

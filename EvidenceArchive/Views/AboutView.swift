@@ -26,6 +26,8 @@ struct AboutView: View {
                         .foregroundStyle(.secondary)
                 }
             }
+            .scrollContentBackground(.hidden)
+            .evidenceScreenBackground()
             .navigationTitle("About")
         }
     }

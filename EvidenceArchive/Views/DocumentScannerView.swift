@@ -57,22 +57,25 @@ struct DocumentScannerView: UIViewControllerRepresentable {
                 throw EvidenceError.importFailed(L10n.text("Scanned document was empty."))
             }
 
-            let data = renderPDF(from: scan)
+            let images = (0..<scan.pageCount).map { scan.imageOfPage(at: $0) }
+            let data = renderPDF(from: images)
+            let recognizedText = TextRecognitionService.recognizeText(in: images)
+
             return EvidenceStore.DataImportPayload(
                 data: data,
                 suggestedFilename: "\(L10n.text("Scanned Document")) \(Self.filenameTimestamp()).pdf",
-                typeIdentifier: UTType.pdf.identifier
+                typeIdentifier: UTType.pdf.identifier,
+                recognizedText: recognizedText
             )
         }
 
-        private static func renderPDF(from scan: VNDocumentCameraScan) -> Data {
+        private static func renderPDF(from images: [UIImage]) -> Data {
             let pageBounds = CGRect(x: 0, y: 0, width: 612, height: 792)
             let contentBounds = pageBounds.insetBy(dx: 36, dy: 36)
             let renderer = UIGraphicsPDFRenderer(bounds: pageBounds)
 
             return renderer.pdfData { context in
-                for pageIndex in 0..<scan.pageCount {
-                    let image = scan.imageOfPage(at: pageIndex)
+                for image in images {
                     let imageSize = image.size
                     let scale = min(
                         contentBounds.width / imageSize.width,

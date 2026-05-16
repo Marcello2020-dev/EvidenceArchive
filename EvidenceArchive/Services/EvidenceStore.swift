@@ -7,6 +7,19 @@ final class EvidenceStore: ObservableObject {
         let data: Data
         let suggestedFilename: String
         let typeIdentifier: String?
+        let recognizedText: String
+
+        init(
+            data: Data,
+            suggestedFilename: String,
+            typeIdentifier: String?,
+            recognizedText: String = ""
+        ) {
+            self.data = data
+            self.suggestedFilename = suggestedFilename
+            self.typeIdentifier = typeIdentifier
+            self.recognizedText = recognizedText
+        }
     }
 
     @Published var isBusy = false
@@ -94,6 +107,7 @@ final class EvidenceStore: ObservableObject {
         sourceLabel: String,
         note: String,
         tags: String,
+        recognizedText: String = "",
         eventDate: Date?,
         context: ModelContext
     ) async {
@@ -109,6 +123,19 @@ final class EvidenceStore: ObservableObject {
                     preferredEventDate: eventDate
                 )
 
+                let itemRecognizedText: String
+                if recognizedText.isEmpty {
+                    let storedURL = try StorageLayout
+                        .evidenceFolderURL(caseID: caseFile.id)
+                        .appendingPathComponent(imported.storedFilename, isDirectory: false)
+                    itemRecognizedText = TextRecognitionService.recognizeText(
+                        inFileAt: storedURL,
+                        typeIdentifier: imported.typeIdentifier
+                    )
+                } else {
+                    itemRecognizedText = recognizedText
+                }
+
                 let item = EvidenceItem(
                     caseID: caseFile.id,
                     title: imported.title,
@@ -120,6 +147,7 @@ final class EvidenceStore: ObservableObject {
                     source: sourceLabel,
                     note: note,
                     tags: tags,
+                    recognizedText: itemRecognizedText,
                     sha256: imported.sha256,
                     fileSize: imported.fileSize,
                     typeIdentifier: imported.typeIdentifier,
@@ -144,6 +172,7 @@ final class EvidenceStore: ObservableObject {
         sourceLabel: String,
         note: String,
         tags: String,
+        recognizedText: String = "",
         eventDate: Date?,
         context: ModelContext
     ) async {
@@ -161,6 +190,10 @@ final class EvidenceStore: ObservableObject {
                     typeIdentifier: payload.typeIdentifier
                 )
 
+                let itemRecognizedText = payload.recognizedText.isEmpty
+                    ? recognizedText
+                    : payload.recognizedText
+
                 let item = EvidenceItem(
                     caseID: caseFile.id,
                     title: imported.title,
@@ -172,6 +205,7 @@ final class EvidenceStore: ObservableObject {
                     source: sourceLabel,
                     note: note,
                     tags: tags,
+                    recognizedText: itemRecognizedText,
                     sha256: imported.sha256,
                     fileSize: imported.fileSize,
                     typeIdentifier: imported.typeIdentifier,
@@ -197,6 +231,7 @@ final class EvidenceStore: ObservableObject {
         sourceLabel: String,
         tags: String,
         eventDate: Date?,
+        recognizedText: String = "",
         context: ModelContext
     ) async {
         let trimmedTitle = title.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -214,6 +249,7 @@ final class EvidenceStore: ObservableObject {
             sourceLabel: sourceLabel,
             note: note,
             tags: tags,
+            recognizedText: recognizedText,
             eventDate: eventDate,
             context: context
         )
@@ -223,6 +259,18 @@ final class EvidenceStore: ObservableObject {
         do {
             let url = try exportService.exportFolder(for: caseFile)
             lastMessage = L10n.text("Export ready.")
+            lastError = nil
+            return url
+        } catch {
+            lastError = error.localizedDescription
+            return nil
+        }
+    }
+
+    func exportCaseReport(_ caseFile: CaseFile) -> URL? {
+        do {
+            let url = try exportService.exportPDFReport(for: caseFile)
+            lastMessage = L10n.text("PDF report ready.")
             lastError = nil
             return url
         } catch {

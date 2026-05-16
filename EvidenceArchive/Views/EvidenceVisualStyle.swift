@@ -1,4 +1,25 @@
 import SwiftUI
+import UIKit
+
+enum EvidenceTheme {
+    static let screenBackground = Color(
+        uiColor: UIColor { traits in
+            if traits.userInterfaceStyle == .dark {
+                return UIColor(red: 0.06, green: 0.10, blue: 0.11, alpha: 1.0)
+            }
+
+            return UIColor(red: 0.87, green: 0.96, blue: 0.92, alpha: 1.0)
+        }
+    )
+}
+
+extension View {
+    func evidenceScreenBackground() -> some View {
+        background(EvidenceTheme.screenBackground.ignoresSafeArea())
+            .toolbarBackground(EvidenceTheme.screenBackground, for: .navigationBar)
+            .toolbarBackground(.visible, for: .navigationBar)
+    }
+}
 
 extension CaseCategory {
     var tintColor: Color {

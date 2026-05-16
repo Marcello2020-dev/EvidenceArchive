@@ -14,6 +14,7 @@ final class EvidenceItem {
     var source: String = ""
     var note: String = ""
     var tags: String = ""
+    var recognizedText: String = ""
     var sha256: String = ""
     var fileSize: Int64 = 0
     var typeIdentifier: String = ""
@@ -33,6 +34,7 @@ final class EvidenceItem {
         source: String,
         note: String,
         tags: String,
+        recognizedText: String = "",
         sha256: String,
         fileSize: Int64,
         typeIdentifier: String,
@@ -50,6 +52,7 @@ final class EvidenceItem {
         self.source = source
         self.note = note
         self.tags = tags
+        self.recognizedText = recognizedText
         self.sha256 = sha256
         self.fileSize = fileSize
         self.typeIdentifier = typeIdentifier

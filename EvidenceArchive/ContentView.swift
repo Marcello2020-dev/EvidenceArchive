@@ -13,6 +13,9 @@ struct ContentView: View {
                     Label("About", systemImage: "info.circle")
                 }
         }
+        .background(EvidenceTheme.screenBackground.ignoresSafeArea())
+        .toolbarBackground(EvidenceTheme.screenBackground, for: .tabBar)
+        .toolbarBackground(.visible, for: .tabBar)
     }
 }
 

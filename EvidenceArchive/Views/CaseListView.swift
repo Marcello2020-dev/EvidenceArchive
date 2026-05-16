@@ -47,7 +47,7 @@ struct CaseListView: View {
                     .scrollContentBackground(.hidden)
                 }
             }
-            .background(Color(uiColor: .systemGroupedBackground))
+            .evidenceScreenBackground()
             .navigationTitle("Evidence Archive")
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
@@ -251,6 +251,8 @@ struct CaseEditorView: View {
                         .frame(minHeight: 120)
                 }
             }
+            .scrollContentBackground(.hidden)
+            .evidenceScreenBackground()
             .navigationTitle(titleText)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {

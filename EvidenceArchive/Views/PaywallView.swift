@@ -64,6 +64,8 @@ struct PaywallView: View {
                     }
                 }
             }
+            .scrollContentBackground(.hidden)
+            .evidenceScreenBackground()
             .navigationTitle("Full Version")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

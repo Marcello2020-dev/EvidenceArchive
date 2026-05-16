@@ -16,6 +16,7 @@ struct AddEvidenceView: View {
     @State private var showFileImporter = false
     @State private var showCameraCapture = false
     @State private var showDocumentScanner = false
+    @State private var showTextScanner = false
     @State private var showPaywall = false
     @State private var photoItems: [PhotosPickerItem] = []
 
@@ -122,8 +123,27 @@ struct AddEvidenceView: View {
                     }
                     .disabled(!isDocumentScannerAvailable)
 
+                    Button {
+                        if canImportEvidence(count: 1) {
+                            showTextScanner = true
+                        }
+                    } label: {
+                        ImportActionLabel(
+                            title: L10n.text("Scan Text"),
+                            systemName: "text.viewfinder",
+                            color: .indigo
+                        )
+                    }
+                    .disabled(!isTextScannerAvailable)
+
                     if let unavailableCaptureMessage {
                         Text(unavailableCaptureMessage)
+                            .font(.footnote)
+                            .foregroundStyle(.secondary)
+                    }
+
+                    if !isTextScannerAvailable {
+                        Text("Text scanner is not available on this device.")
                             .font(.footnote)
                             .foregroundStyle(.secondary)
                     }
@@ -159,7 +179,7 @@ struct AddEvidenceView: View {
                 }
             }
             .scrollContentBackground(.hidden)
-            .background(Color(uiColor: .systemGroupedBackground))
+            .evidenceScreenBackground()
             .navigationTitle("Add Evidence")
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
@@ -219,6 +239,11 @@ struct AddEvidenceView: View {
                     }
                 }
             }
+            .fullScreenCover(isPresented: $showTextScanner) {
+                TextScannerSheet { text in
+                    importScannedText(text)
+                }
+            }
             .onChange(of: photoItems) { _, newItems in
                 guard !newItems.isEmpty else { return }
                 guard canImportEvidence(count: newItems.count) else {
@@ -235,11 +260,17 @@ struct AddEvidenceView: View {
                         let preferredType = item.supportedContentTypes.first
                         let ext = preferredType?.preferredFilenameExtension ?? "bin"
                         let filename = "Photo_\(Int(Date().timeIntervalSince1970))_\(index).\(ext)"
+                        let recognizedText = TextRecognitionService.recognizeText(
+                            in: data,
+                            typeIdentifier: preferredType?.identifier
+                        )
+
                         payloads.append(
                             EvidenceStore.DataImportPayload(
                                 data: data,
                                 suggestedFilename: filename,
-                                typeIdentifier: preferredType?.identifier
+                                typeIdentifier: preferredType?.identifier,
+                                recognizedText: recognizedText
                             )
                         )
                     }
@@ -279,6 +310,10 @@ struct AddEvidenceView: View {
         VNDocumentCameraViewController.isSupported
     }
 
+    private var isTextScannerAvailable: Bool {
+        TextScannerView.isAvailable
+    }
+
     private var unavailableCaptureMessage: String? {
         switch (isCameraCaptureAvailable, isDocumentScannerAvailable) {
         case (true, true):
@@ -301,7 +336,8 @@ struct AddEvidenceView: View {
         let payload = EvidenceStore.DataImportPayload(
             data: data,
             suggestedFilename: "\(L10n.text("Captured Photo")) \(filenameTimestamp()).jpg",
-            typeIdentifier: UTType.jpeg.identifier
+            typeIdentifier: UTType.jpeg.identifier,
+            recognizedText: TextRecognitionService.recognizeText(in: image)
         )
         importCapturePayload(payload)
     }
@@ -316,6 +352,25 @@ struct AddEvidenceView: View {
                 note: commonNote,
                 tags: tags,
                 eventDate: eventDate,
+                context: modelContext
+            )
+            dismissIfNoError()
+        }
+    }
+
+    private func importScannedText(_ text: String) {
+        let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty, canImportEvidence(count: 1) else { return }
+
+        Task {
+            await store.addTextNoteEvidence(
+                into: caseFile,
+                title: L10n.text("Scanned Text"),
+                note: trimmed,
+                sourceLabel: L10n.text("VisionKit Text Scanner"),
+                tags: tags,
+                eventDate: eventDate,
+                recognizedText: trimmed,
                 context: modelContext
             )
             dismissIfNoError()
@@ -346,6 +401,93 @@ struct AddEvidenceView: View {
     private func dismissIfNoError() {
         if store.lastError == nil {
             dismiss()
+        }
+    }
+}
+
+private struct TextScannerSheet: View {
+    @Environment(\.dismiss) private var dismiss
+
+    @State private var recognizedText = ""
+    @State private var scannerError: String?
+
+    let onSave: (String) -> Void
+
+    private var trimmedText: String {
+        recognizedText.trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+
+    var body: some View {
+        NavigationStack {
+            ZStack {
+                if TextScannerView.isAvailable {
+                    TextScannerView(
+                        recognizedText: $recognizedText,
+                        scannerError: $scannerError
+                    )
+                    .ignoresSafeArea()
+                } else {
+                    ContentUnavailableView(
+                        L10n.text("Text Scanner"),
+                        systemImage: "text.viewfinder",
+                        description: Text("Text scanner is not available on this device.")
+                    )
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .evidenceScreenBackground()
+                }
+
+                VStack {
+                    Spacer()
+                    VStack(alignment: .leading, spacing: 12) {
+                        HStack {
+                            Label("Recognized Text", systemImage: "text.viewfinder")
+                                .font(.headline)
+                            Spacer()
+                        }
+
+                        ScrollView {
+                            Text(trimmedText.isEmpty ? L10n.text("No text detected yet.") : trimmedText)
+                                .font(.subheadline)
+                                .foregroundStyle(trimmedText.isEmpty ? .secondary : .primary)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .textSelection(.enabled)
+                        }
+                        .frame(maxHeight: 120)
+
+                        if let scannerError {
+                            Text(scannerError)
+                                .font(.footnote)
+                                .foregroundStyle(.red)
+                        } else {
+                            Text("Point the camera at text. Detected text will appear here.")
+                                .font(.footnote)
+                                .foregroundStyle(.secondary)
+                        }
+
+                        Button {
+                            onSave(trimmedText)
+                            dismiss()
+                        } label: {
+                            Label("Save Scanned Text", systemImage: "checkmark.circle")
+                                .frame(maxWidth: .infinity)
+                        }
+                        .buttonStyle(.borderedProminent)
+                        .disabled(trimmedText.isEmpty)
+                    }
+                    .padding(16)
+                    .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 16))
+                    .padding()
+                }
+            }
+            .navigationTitle("Scan Text")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Close") {
+                        dismiss()
+                    }
+                }
+            }
         }
     }
 }
